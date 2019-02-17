@@ -6,8 +6,8 @@ WORKTIME = 1500     # 25 Minutes
 SHORTBREAK = 300    # 5 Minutes
 LONGBREAK = 600     # 10 Minutes
 
-# Pomotimer counts down from given runTime
-def pomotimer(runTime):
+# countdown counts down from given runTime
+def countdown(runTime):
     while runTime:
         mins, secs = divmod(runTime, 60)
         timeformat = '{:02d}:{:02d}'.format(mins, secs)
@@ -16,23 +16,24 @@ def pomotimer(runTime):
         runTime -= 1
     print("Time up!")
 
-def workLoop(workType):
-    if workType == "test":
-        print("Running a tst")
-        pomotimer(TESTTIME)
-    elif workType == "shortBreak":
-        pomotimer(SHORTBREAK)
-    elif workType == "longBreak":
-        pomotimer(LONGBREAK)
-    elif workType == "standard":
-        pomotimer(WORKTIME)
-        pomotimer(SHORTBREAK)
-        pomotimer(WORKTIME)
-        pomotimer(SHORTBREAK)
-        pomotimer(WORKTIME)
-        pomotimer(SHORTBREAK)
-        pomotimer(WORKTIME)
-        pomotimer(LONGBREAK)
+# scheduler runs the specified timing approach. Maybe configurable one day, but these are pretty standard for pomodoro applications 
+def scheduler(timerType):
+    if timerType == "test":
+        print("Running a test")
+        countdown(TESTTIME)
+    elif timerType == "shortBreak":
+        countdown(SHORTBREAK)
+    elif timerType == "longBreak":
+        countdown(LONGBREAK)
+    elif timerType == "standard":
+        countdown(WORKTIME)
+        countdown(SHORTBREAK)
+        countdown(WORKTIME)
+        countdown(SHORTBREAK)
+        countdown(WORKTIME)
+        countdown(SHORTBREAK)
+        countdown(WORKTIME)
+        countdown(LONGBREAK)
 
 # Pomotracker will allow for categorization and lead into data saving (and loading?)
 # def pomotracker():
@@ -40,17 +41,18 @@ def workLoop(workType):
 def main():
     reply = ""
     while reply.lower() != "q":
-        workType = ""
-        reply = input("Press S to start a standard cycle >> ")
+        timerType = ""
+        print("(S)tandard Cycle, Short (b)reak, (l)ong Break, (t)est, or (q)uit:")
+        reply = input("Please enter a selection >> ")
         if reply.lower() == "s":
-            workType = "standard"
+            timerType = "standard"
         elif reply.lower() == "b":
-            workType = "shortBreak"
+            timerType = "shortBreak"
         elif reply.lower() == "l":
-            workType = "longBreak"
+            timerType = "longBreak"
         elif reply.lower() == "t":
-            workType = "test"
-        workLoop(workType)
+            timerType = "test"
+        scheduler(timerType)
     exit()
 
 
