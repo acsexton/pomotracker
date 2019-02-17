@@ -14,13 +14,19 @@ def countdown(runTime):
         print(timeformat, end="\r")
         time.sleep(1)
         runTime -= 1
-    print("Time up!")
+    print('\a') # Terminal bell
+    print("\nTime up!\n")
+    input("Press Enter to Continue >> ")
 
 # scheduler runs the specified timing approach. Maybe configurable one day, but these are pretty standard for pomodoro applications 
 def scheduler(timerType):
     if timerType == "test":
         print("Running a test")
         countdown(TESTTIME)
+        print("Running a test")
+        countdown(TESTTIME)
+        print("Starting a short break")
+        countdown(SHORTBREAK)
     elif timerType == "shortBreak":
         countdown(SHORTBREAK)
     elif timerType == "longBreak":
@@ -54,7 +60,6 @@ def main():
             timerType = "test"
         scheduler(timerType)
     exit()
-
 
 if __name__ == "__main__":
     main()
