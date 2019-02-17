@@ -1,4 +1,7 @@
+## Temple Bell by Mike Koenig (via http://soundbible.com/1496-Japanese-Temple-Bell-Small.html) under Attribution 3.0 (https://creativecommons.org/licenses/by/3.0/us/)
+
 import time
+from playsound import playsound
 
 
 # Default Times (Seconds)
@@ -17,7 +20,7 @@ def countdown(runTime):
         print(timeformat, end="\r")
         time.sleep(1)
         runTime -= 1
-    print('\a') # Terminal bell // TODO: bell sound effect? 
+    playsound('temple_bell.mp3')
     print("\nTime up!\n")
     input("Press Enter to Continue >> ")
     # TODO: Print next time length?
