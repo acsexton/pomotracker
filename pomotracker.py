@@ -8,7 +8,8 @@ SHORTBREAK = 300    # 5 Minutes
 LONGBREAK = 600     # 10 Minutes
 
 
-# countdown counts down from given runTime, plays a terminal bell, and then waits for user input before starting the next countdown
+# countdown counts down from given runTime, plays a terminal bell, and then
+# waits for user input before starting the next countdown
 def countdown(runTime):
     while runTime:
         mins, secs = divmod(runTime, 60)
@@ -50,19 +51,14 @@ def scheduler(timerType):
         # TODO: interrupt/skip current countdown, set next manually?
 
 
-# Pomotracker will allow for categorization and lead into data saving (and
-# loading?)
-# def pomotracker():
-# TODO: Figure out categorizing and counting cycles per that category
-# TODO: Figure out file saving/loading
-# TODO: Reporting? or just csv file and leave up to spreadsheet geekery?
-
-
-def main():
+# Pomotracker prompts user for type of timer they want, will some point allow
+# for categorization and lead into data saving (and # loading?)
+def pomotracker():
     reply = ""
     while reply.lower() != "q":
         timerType = ""
-        print("(S)tandard Cycle, Short (b)reak, (l)ong Break, (t)est, or (q)uit:")
+        print("(S)tandard Cycle, Short (b)reak," +
+            " (l)ong Break, (t)est, or (q)uit:")
         reply = input("Please enter a selection >> ")
         if reply.lower() == "s":
             timerType = "standard"
@@ -73,8 +69,14 @@ def main():
         elif reply.lower() == "t":
             timerType = "test"
         scheduler(timerType)
-        # TODO: Repeat previous timerType? Q to quit?
-    exit()
+    # TODO: Repeat previous timerType? Q to quit?
+    # TODO: Figure out categorizing and counting cycles per that category
+    # TODO: Figure out file saving/loading
+    # TODO: Reporting? or just csv file and leave up to spreadsheet geekery?
+
+
+def main():
+    pomotracker()
 
 
 if __name__ == "__main__":
