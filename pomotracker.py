@@ -1,85 +1,109 @@
-## Temple Bell by Mike Koenig (via http://soundbible.com/1496-Japanese-Temple-Bell-Small.html) under Attribution 3.0 (https://creativecommons.org/licenses/by/3.0/us/)
+## Temple Bell by Mike Koenig (via http://soundbible.com/1496-Japanese-Temple-Bell-Small.html)
+# under Attribution 3.0 (https://creativecommons.org/licenses/by/3.0/us/)
 
 import time
 from playsound import playsound
+from enum import Enum
+
+# Default Times in seconds
+SECONDS_5 = 5
+MINUTES_5 = 300  # 5 Minutes
+MINUTES_15 = 900  # 15 Minutes
+MINUTES_25 = 1500  # 25 Minutes
+
+# Sound Files
+BREAK_SOUND = 'temple_bell.mp3'
 
 
-# Default Times (Seconds)
-TESTTIME = 5        # 5 Seconds
-WORKTIME = 1500     # 25 Minutes
-SHORTBREAK = 300    # 5 Minutes
-LONGBREAK = 600     # 10 Minutes
+class Timers(Enum):
+    # Default work time, number of work cycles/shortbreaks between long breaks
+    TESTER = [SECONDS_5, 1]
+    BREAK_SHORT = [MINUTES_5, 1]
+    BREAK_LONG = [MINUTES_15, 1]
+    WORK_CYCLE = [MINUTES_25, 3]
 
 
-# countdown counts down from given runTime, plays a terminal bell, and then
-# waits for user input before starting the next countdown
-def countdown(runTime):
-    while runTime:
-        mins, secs = divmod(runTime, 60)
-        timeformat = '{:02d}:{:02d}'.format(mins, secs)
-        print(timeformat, end="\r")
-        time.sleep(1)
-        runTime -= 1
-    playsound('temple_bell.mp3')
+def timer_complete(sound=BREAK_SOUND):
+    playsound(sound)
     print("\nTime up!\n")
-    input("Press Enter to Continue >> ")
-    # TODO: Print next time length?
-    # TODO: Gentle nag with simpler bell effect until enter pressed?
 
 
-# scheduler runs the specified timing approach. Maybe configurable one
-# day, but these are pretty standard for pomodoro applications
-def scheduler(timerType):
-    if timerType == "test":
-        tests = 2
-        while tests > 0:
-            print("Running a test")
-            countdown(TESTTIME)
-            tests -= 1
-    elif timerType == "shortBreak":
-        countdown(SHORTBREAK)
-    elif timerType == "longBreak":
-        countdown(LONGBREAK)
-    elif timerType == "standard":
-        # TODO: number of shortbreaks before long break as parameter?
-        shortbreaks = 4
-        while shortbreaks > 0:
-            countdown(WORKTIME)
-            countdown(SHORTBREAK)
-            shortbreaks -= 1
-        countdown(LONGBREAK)        
-        # TODO: Math schedule with gentle nudge halfway through worktime, but
-        # does not stop timer?
-        # TODO: Counting out and printing number of works/breaks/cycles
-        # TODO: interrupt/skip current countdown, set next manually?
+class Timer:
+    def __init__(self, seconds):
+        self.seconds = seconds
+
+    def tick(self):
+        mins, secs = divmod(self.seconds, 60)
+        time_format = '{:02d}:{:02d}'.format(mins, secs)
+        print(time_format, end="\r")
+        time.sleep(1)
+        self.seconds -= 1
+
+    def countdown(self):
+        while self.has_time():
+            self.tick()
+        timer_complete()
+
+    def has_time(self):
+        return self.seconds != 0
 
 
-# Pomotracker prompts user for type of timer they want, will some point allow
-# for categorization and lead into data saving (and # loading?)
-def pomotracker():
-    reply = ""
-    while reply.lower() != "q":
-        timerType = ""
-        print("(S)tandard Cycle, Short (b)reak," +
-            " (l)ong Break, (t)est, or (q)uit:")
-        reply = input("Please enter a selection >> ")
-        if reply.lower() == "s":
-            timerType = "standard"
-        elif reply.lower() == "b":
-            timerType = "shortBreak"
-        elif reply.lower() == "l":
-            timerType = "longBreak"
-        elif reply.lower() == "t":
-            timerType = "test"
-        scheduler(timerType)
-    # TODO: Repeat previous timerType? Q to quit?
-    # TODO: Figure out categorizing and counting cycles per that category
-    # TODO: Figure out file saving/loading
-    # TODO: Reporting? or just csv file and leave up to spreadsheet geekery?
+class PomoTracker:
+
+    # TODO: Vary number of cycles?
+    # TODO: Counting out and printing number of works/breaks/cycles
+    # TODO: interrupt/skip current countdown, set next manually?
+
+    def __init__(self, timer_type):
+        default_work_index = 0
+        work_cycles_index = 1
+
+        self.timer_type = timer_type
+        self.work_time = timer_type.value[default_work_index]
+        self.work_cycles = timer_type.value[work_cycles_index]
+
+    def get_to_work(self):
+        input("Press enter to start work...")
+        work_timer = Timer(self.work_time)
+        work_timer.countdown()
+
+    def take_short_break(self):
+        input("Press enter to start a short break...")
+        short_break_timer = Timer(MINUTES_5)
+        short_break_timer.countdown()
+
+    def take_long_break(self):
+        input("Press enter to start a long break...")
+        long_break_timer = Timer(MINUTES_15)
+        long_break_timer.countdown()
+
+    def run_cycles(self):
+        while self.work_cycles > 0:
+            self.get_to_work()
+            self.take_short_break()
+            self.work_cycles -= 1
+        self.take_long_break()
 
 
 def main():
-    pomotracker()
+    timer_type = None
+    print("(S)tandard Cycle, Short (b)reak," +
+          " (l)ong Break, (t)est, or (q)uit:")
+    reply = input("Please enter a selection >> ")
+    if reply.lower() == "s":
+        timer_type = Timers.WORK_CYCLE
+    elif reply.lower() == "b":
+        timer_type = Timers.BREAK_SHORT
+    elif reply.lower() == "l":
+        timer_type = Timers.BREAK_LONG
+    elif reply.lower() == "t":
+        timer_type = Timers.TESTER
+    else:
+        exit(1)
+    pomo_tracker = PomoTracker(timer_type)
+    pomo_tracker.run_cycles()
+    # TODO: CSV saving/loading
+    # TODO: Reporting, categories and cycles per that category?
 
 
 if __name__ == "__main__":
